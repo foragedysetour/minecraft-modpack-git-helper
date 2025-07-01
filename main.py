@@ -21,6 +21,12 @@ def cmd(string):
     except subprocess.CalledProcessError as e:
         print(f"{get_log_time()}{string}执行失败")
         print(e.stderr)
+
+        # 对版本冲突进行特判
+
+        if "CONFLICT" in e.stderr:
+            messagebox.showerror("错误", "版本冲突，请根据命令行提示逐步解决冲突（纯英文，不会机翻）")
+            os.system("git mergetool")
         return False
 
 def init_git(user_name, user_email,https_url):
@@ -182,10 +188,6 @@ def save_current_version(root):
     massage=input("请输入当前开发版本的提交信息(认真填写): ")
     cmd(f"git commit -m {massage}")
     print(f"{get_log_time()}正在保存当前开发版本...")
-    print(f"{get_log_time()}正在切换到main分支...")
-    cmd("git checkout main")
-    print(f"{get_log_time()}正在合并develop分支...")
-    cmd("git merge develop")
     os.chdir(CURRENT_WORKING_DIR)
     print(f"{get_log_time()}当前开发版本已保存到main分支")
     messagebox.showinfo("成功", "当前开发版本已保存到main分支")
@@ -194,9 +196,22 @@ def save_current_version(root):
 def push_to_github(root):
     root.destroy()
     os.chdir("repositories")
+    print(f"{get_log_time()}正在拉取最新版本...")
+    code=cmd("git pull origin main")
+    if not code:
+        print(f"{get_log_time()}拉取最新版本失败")
+    print(f"{get_log_time()}正在切换到main分支...")
+    cmd("git checkout main")
+    print(f"{get_log_time()}正在合并develop分支...")
+    cmd("git merge develop")
     print(f"{get_log_time()}正在提交到Github...")
-    cmd("git pull origin main")
-    cmd("git push origin main")
+
+    
+    code=cmd("git push origin main")
+    if not code:
+        print(f"{get_log_time()}提交到Github失败")
+        messagebox.showerror("错误", "提交到Github失败")
+        return
     print(f"{get_log_time()}提交到Github成功")
     messagebox.showinfo("成功", "提交到Github成功")
     os.chdir(CURRENT_WORKING_DIR)
