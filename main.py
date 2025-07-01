@@ -189,19 +189,20 @@ def save_current_version(root):
     cmd(f"git commit -m {massage}")
     print(f"{get_log_time()}正在保存当前开发版本...")
     os.chdir(CURRENT_WORKING_DIR)
-    print(f"{get_log_time()}当前开发版本已保存到main分支")
-    messagebox.showinfo("成功", "当前开发版本已保存到main分支")
+    print(f"{get_log_time()}当前开发版本已保存")
+    messagebox.showinfo("成功", "当前开发版本已保存")
     main_gui()
 
 def push_to_github(root):
     root.destroy()
     os.chdir("repositories")
+    print(f"{get_log_time()}正在切换到main分支...")
+    cmd("git checkout main")
     print(f"{get_log_time()}正在拉取最新版本...")
     code=cmd("git pull origin main")
     if not code:
         print(f"{get_log_time()}拉取最新版本失败")
-    print(f"{get_log_time()}正在切换到main分支...")
-    cmd("git checkout main")
+
     print(f"{get_log_time()}正在合并develop分支...")
     cmd("git merge develop")
     print(f"{get_log_time()}正在提交到Github...")
