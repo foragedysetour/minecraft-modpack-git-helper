@@ -205,6 +205,9 @@ def push_to_github(root):
 
     print(f"{get_log_time()}正在合并develop分支...")
     cmd("git merge develop")
+    code=cmd("git pull origin main")
+    if not code:
+        print(f"{get_log_time()}拉取最新版本失败")
     print(f"{get_log_time()}正在提交到Github...")
 
     
